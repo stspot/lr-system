@@ -1,12 +1,11 @@
 **/bin/**
 **/target/**
-/.idea/**
+**/.idea/**
+**/.settings/**
 *.classpath
 *.factorypath
 *.project
-compose.yaml
 *.md
 **/.mvn/**
-mvnw
 *.cmd
-**/.settings/**
+mvnw
