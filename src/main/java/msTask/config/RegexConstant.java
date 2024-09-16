@@ -14,7 +14,7 @@ public final class RegexConstant {
 					+ "The length must be strictly"
 					+ "within the specified range for the input to be valid";
 	
-	public final static String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+	public final static String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+{}\\[\\]:;\"'<>,.?\\/~`|\\\\-]).{8,}$";
 	public final static String PASSWORD_REGEX_MSG_ERR = "An error occurred. Please enter a valid password."
 					+ "The input must contain at least one lowercase letter, one uppercase letter,"
 					+ "one digit, one special character (@, $, !, %, *, ?, &),"
@@ -52,7 +52,7 @@ public final class RegexConstant {
 				+ "The input must only contain uppercase and lowercase letters and hyphens, "
 				+ "with no spaces or other special characters, to be valid according to the regex.";
 	
-	public final static String ID_REGEX = "^[a-zA-Z\\-]+$";
+	public final static String ID_REGEX = "^[a-zA-Z0-9\\-]+$";
 	public final static String ID_REGEX_MSG_ERR = "An error occurred. Please enter a valid id."
 				+ "The input must only contain uppercase and lowercase letters and hyphens, "
 				+ "with no spaces or other special characters, to be valid according to the regex.";

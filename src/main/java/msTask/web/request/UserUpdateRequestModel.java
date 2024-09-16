@@ -11,7 +11,7 @@ import msTask.config.RegexConstant;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserUpdateRequestModel {
+public class UserUpdateRequestModel extends BaseRequestModel {
     
     @Pattern(regexp = RegexConstant.FIRST_NAME_REGEX, message = RegexConstant.FIRST_NAME_REGEX_MSG_ERR)
     private String firstName;

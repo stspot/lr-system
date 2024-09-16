@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import msTask.service.UserService;
@@ -52,9 +54,11 @@ public class UserController {
 	@ApiResponse(responseCode = "400", description = "Invalid page or size parameter")
 	@GetMapping("/all/pages")
 	public ResponseEntity<Page<UserResponseModel>> getAllUsersPages(
-			@Pattern(regexp = "[0-9]{0,3}")
+			@DecimalMin(value = "0")
+			@DecimalMax(value = "100")
 			@RequestParam(defaultValue = "0") int page,
-			@Pattern(regexp = "[0-9]{0,3}")
+			@DecimalMin(value = "5")
+			@DecimalMax(value = "20")
 			@RequestParam(defaultValue = "10") int size
 	) {
 		Pageable pageable = PageRequest.of(page, size);
@@ -73,7 +77,7 @@ public class UserController {
 	@ApiResponse(responseCode = "200", description = "Successfully retrieved list of users")
 	@ApiResponse(responseCode = "204", description = "No users found")
 	@GetMapping("/all")
-	public ResponseEntity<List<UserResponseModel>> getAllUsersPages() {
+	public ResponseEntity<List<UserResponseModel>> getAllUsers() {
 		List<User> users = this.userService.findAll();
 		List<UserResponseModel> allUsers = users.stream().map(u -> this.modelMapper.map(u, UserResponseModel.class))
 				.toList();

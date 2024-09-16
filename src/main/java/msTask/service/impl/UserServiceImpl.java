@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User findByUsername(String username) throws UserException {
-		User foundUser = userRepository.findByUsername(username);
+		User foundUser = userRepository.findByUsername(username).orElse(null);
 		if(foundUser == null) throw new UserException("User not found");
 		return foundUser;
 	}

@@ -14,8 +14,8 @@ import msTask.data.repositority.RoleRepository;
 import msTask.data.repositority.UserRepository;
 import msTask.exception.UserException;
 import msTask.models.EmailRequestModel;
+import msTask.security.jwt.JwtProvider;
 import msTask.service.AuthService;
-import msTask.service.JwtService;
 import msTask.service.UserService;
 import msTask.web.response.AuthResponseModel;
 
@@ -27,7 +27,7 @@ public class AuthServiceImpl implements AuthService {
 	private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
+    private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
 	private final EmailService emailService;
 
@@ -35,7 +35,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponseModel login(User user) throws UserException {
         User foundByEmail = this.userService.getByEmail(user.getEmail());
         this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
-    	String jwtToken = jwtService.generateToken(foundByEmail);
+    	String jwtToken = jwtProvider.generateToken(foundByEmail);
     	return new AuthResponseModel(jwtToken);
     }
 
