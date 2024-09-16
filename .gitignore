@@ -1,0 +1,13 @@
+**/bin/**
+**/target/**
+/.idea/**
+*.classpath
+*.factorypath
+*.project
+compose.yaml
+*.md
+**/.mvn/**
+mvnw
+*.cmd
+**/.settings/**
+*.md
