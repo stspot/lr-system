@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import msTask.security.jwt.JWTAuthFilter;
 import msTask.security.jwt.JwtAuthEntryPoint;
+import static msTask.config.PathConstants.*;
 
 @Configuration
 @EnableWebSecurity
@@ -22,11 +23,11 @@ public class SecurityConfig {
 	private final JwtAuthEntryPoint authEntryPoint;
 	
 	private final String[] allowedLinks = {
-			"/auth/login", 
-			"/auth/register",
-			"/auth/confirm-registration/**",
-			"/auth/reset-password/**",
-			"/auth/create-new-password/**",
+			AUTH_L + LOGIN_L,
+			AUTH_L + REGISTER_L,
+			AUTH_L + CONFIRM_REGISTRATION_L,
+			AUTH_L + RESET_PASSWORD_L,
+			AUTH_L + CREATE_NEW_PASSWORD_L,
 			"/swagger-ui/**",
 			"/v3/**"};
 	

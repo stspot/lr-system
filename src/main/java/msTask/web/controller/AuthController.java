@@ -13,16 +13,13 @@ import lombok.RequiredArgsConstructor;
 import msTask.web.request.NewPasswordRequestModel;
 import msTask.web.request.ResetPasswordRequestModel;
 
+import msTask.web.response.ResetPasswordResponseModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import msTask.config.RegexConstant;
 import msTask.data.entity.User;
 import msTask.exception.UserException;
 import msTask.service.AuthService;
@@ -31,10 +28,12 @@ import msTask.web.request.UserRegisterRequestModel;
 import msTask.web.response.AuthResponseModel;
 import msTask.web.response.UserResponseModel;
 
+import static msTask.config.PathConstants.*;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/auth")
-@CrossOrigin(originPatterns = "*")
+@RequestMapping(path = AUTH_L)
+@CrossOrigin(originPatterns = CROSS_ORGIN_PATTERN_L)
 @Tag(name = "Auth Controller", description = "This controller handles the registration, " +
 		"login and forgotten password recovery operations in this api.")
 public class AuthController {
@@ -53,7 +52,7 @@ public class AuthController {
 	@ApiResponse(responseCode = "200", description = "User successfully authenticated")
 	@ApiResponse(responseCode = "400", description = "Invalid login credentials")
 	@ApiResponse(responseCode = "401", description = "Unauthorized access")
-	@PostMapping("/login")
+	@PostMapping(path = LOGIN_L)
     public ResponseEntity<AuthResponseModel> login(@Valid @RequestBody UserLoginRequestModel ulrm) throws UserException {
 		User ulsm = this.modelMapper.map(ulrm, User.class);
     	AuthResponseModel authResponseModel = this.authService.login(ulsm);
@@ -71,7 +70,7 @@ public class AuthController {
 	@ApiResponse(responseCode = "201", description = "User successfully registered")
 	@ApiResponse(responseCode = "400", description = "Invalid input data")
 	@ApiResponse(responseCode = "409", description = "User already exists")
-	@PostMapping(path = "/register")
+	@PostMapping(path = REGISTER_L)
 	public ResponseEntity<UserResponseModel> register(@Valid @RequestBody UserRegisterRequestModel inputUser)
 			throws UserException {
 		User userForSave = this.modelMapper.map(inputUser, User.class);
@@ -88,7 +87,7 @@ public class AuthController {
 	 * @return A ResponseEntity object containing a boolean value indicating if the registration is confirmed (true) or not (false).
 	 * @throws UserException If there is an error during the registration confirmation process.
 	 */
-	@PostMapping("/confirm-registration/{aLink}")
+	@GetMapping(path = CONFIRM_REGISTRATION_L)
 	@Operation(summary = "Confirm user registration", description = "Validates the registration confirmation link and activates the user's account.")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Registration confirmed successfully", content = @Content(mediaType = "application/json")),
@@ -96,9 +95,8 @@ public class AuthController {
 			@ApiResponse(responseCode = "404", description = "Registration link not found or expired", content = @Content),
 			@ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
 	public ResponseEntity<Boolean> confirmRegistration (
-			@Parameter(description = "Unique registration confirmation link", required = true,
-					schema = @Schema(type = "string", pattern = "[a-zA-Z0-9-]+"))
-			@Pattern(regexp = "[a-zA-Z0-9-]+")
+			@Parameter(description = "Unique registration confirmation link", required = true)
+			@Pattern(regexp = RegexConstant.ID_REGEX, message = RegexConstant.ID_REGEX_MSG_ERR)
 			@PathVariable ("aLink") String aLink) throws UserException {
 		boolean isConfirmed = authService.confirmRegistration(aLink);
 		return new ResponseEntity<>(isConfirmed, HttpStatus.OK);
@@ -117,11 +115,13 @@ public class AuthController {
 			@ApiResponse(responseCode = "400", description = "Invalid request or missing data", content = @Content),
 			@ApiResponse(responseCode = "404", description = "User not found", content = @Content),
 			@ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
-	@PostMapping("/reset-password")
-	public ResponseEntity<String> resetPassword (
+	@PostMapping(path = RESET_PASSWORD_L)
+	public ResponseEntity<ResetPasswordResponseModel> resetPassword (
 			@Valid @RequestBody ResetPasswordRequestModel rprm) throws UserException {
-		String aLink = this.authService.resetPassword(rprm.getEmail());
-		return new ResponseEntity<>(aLink, HttpStatus.OK);
+		String message = this.authService.resetPassword(rprm.getEmail());
+		ResetPasswordResponseModel responseModel = new ResetPasswordResponseModel();
+		responseModel.setMessage(message);
+		return new ResponseEntity<>(responseModel, HttpStatus.OK);
 	}
 
 	/**
@@ -139,11 +139,10 @@ public class AuthController {
 					content = @Content(schema = @Schema(implementation = Boolean.class))),
 			@ApiResponse(responseCode = "400", description = "Invalid data", content = @Content),
 			@ApiResponse(responseCode = "404", description = "User not found", content = @Content)})
-	@PostMapping("/create-new-password/{uniqueStringForPasswordReset}")
+	@PostMapping(path = CREATE_NEW_PASSWORD_L)
 	public ResponseEntity<Boolean> createNewPassword (
-			@Parameter(description = "Unique password reset string link", required = true, 
-				example = "http://localhost:8080/auth/create-new-password/123aS!456def")
-			@Pattern(regexp = "[a-zA-Z0-9\\-\\/\\:]+")
+			@Parameter(description = "Unique password reset string link", required = true)
+			@Pattern(regexp = RegexConstant.ID_REGEX, message = RegexConstant.ID_REGEX_MSG_ERR)
 			@PathVariable ("uniqueStringForPasswordReset") String uniqueStringForPasswordReset,
 			@Valid @RequestBody NewPasswordRequestModel nprm) throws UserException {
 		boolean isNewPasswordCreated = this.authService.createNewPassword(uniqueStringForPasswordReset, nprm.getPassword());

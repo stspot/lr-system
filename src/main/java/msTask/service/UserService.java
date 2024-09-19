@@ -32,6 +32,15 @@ public interface UserService {
 	 * @return true if the user is deleted, false otherwise.
 	 */
 	boolean deleteUserById(String userId);
+	
+	/**
+	 * Deletes a user by their ID (fake implementation).
+	 *
+	 * @param userId The ID of the user to delete.
+	 * @return true if the user is deleted, false otherwise.
+	 * @throws UserException if there is an error during the deletion process.
+	 */
+	boolean deleteUserByIdFake(String userId) throws UserException;
 
     /**
 	 * Finds a user by their unique string for password reset.
@@ -92,5 +101,6 @@ public interface UserService {
 	 * @throws UserException if there is an error updating the user.
 	 */
 	User updateUser(User newUser) throws UserException;
-	
+
+    boolean isUserExistWithEmail(String email);
 }

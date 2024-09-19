@@ -15,7 +15,7 @@ public class UserResponseModel extends BaseResponseModel {
 
     private String username;
     private String email;
-    private List<RoleResponse> roles;
+    private List<RoleResponseModel> roles;
     private String firstName;
 	private String lastName;
 	private String birthday;

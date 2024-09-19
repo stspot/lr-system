@@ -11,6 +11,8 @@ import msTask.data.entity.User;
 import msTask.data.repositority.UserRepository;
 import msTask.service.UserService;
 
+import static msTask.config.ExceptionConstants.*;
+
 import java.util.List;
 
 @Service
@@ -38,25 +40,33 @@ public class UserServiceImpl implements UserService {
 		this.userRepository.deleteById(userId);
 		return true;
 	}
+	
+	@Override
+	public boolean deleteUserByIdFake(String userId) throws UserException {
+		User foundUser = this.findById(userId);
+		foundUser.setEnabled(false);
+		this.userRepository.save(foundUser);
+		return true;
+	}
 
 	@Override
 	public User findByUniqueStringForResetPassword(String uniqueStringForPasswordReset) throws UserException {
 		User foundUser = userRepository.findByUniqueStringForPasswordReset(uniqueStringForPasswordReset);
-		if(foundUser == null) throw new UserException("User not found");
+		if(foundUser == null) throw new UserException(String.format(USER_WITH_USFPR_NOT_FOUND, uniqueStringForPasswordReset));
 		return foundUser;
 	}
 
 	@Override
-	public User findByActivationLink(String aLink) throws UserException {
-		User foundUser = userRepository.findByActivationLink(aLink);
-		if(foundUser == null) throw new UserException("User not found");
+	public User findByActivationLink(String confirmLink) throws UserException {
+		User foundUser = userRepository.findByActivationLink(confirmLink);
+		if(foundUser == null) throw new UserException(String.format(USER_WITH_CONFIRM_LINK_NOT_FOUND, confirmLink));
 		return foundUser;
 	}
 
 	@Override
 	public User findById(String id) throws UserException {
 		User foundUser = userRepository.findById(id).orElse(null);
-		if(foundUser == null) throw new UserException("User not found");
+		if(foundUser == null) throw new UserException(String.format(USER_WITH_ID_NOT_FOUND, id));
 		return foundUser;
 	}
 
@@ -73,7 +83,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User findByUsername(String username) throws UserException {
 		User foundUser = userRepository.findByUsername(username).orElse(null);
-		if(foundUser == null) throw new UserException("User not found");
+		if(foundUser == null) throw new UserException(String.format(USER_WITH_USERNAME_NOT_FOUND, username));
 		return foundUser;
 	}
 
@@ -84,5 +94,10 @@ public class UserServiceImpl implements UserService {
 		fUser.setLastName(newUser.getLastName());
 		fUser.setPhoneNumber(newUser.getPhoneNumber());
 		return this.userRepository.save(fUser);
+	}
+
+	@Override
+	public boolean isUserExistWithEmail(String email) {
+		return this.userRepository.findByEmail(email) != null;
 	}
 }

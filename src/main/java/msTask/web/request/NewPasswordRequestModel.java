@@ -11,7 +11,7 @@ import msTask.config.RegexConstant;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class NewPasswordRequestModel extends BaseRequestModel {
+public class NewPasswordRequestModel {
 
 	@Pattern(regexp = RegexConstant.PASSWORD_REGEX, message = RegexConstant.PASSWORD_REGEX_MSG_ERR)
 	private String password;
