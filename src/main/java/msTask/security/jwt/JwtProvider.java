@@ -15,7 +15,7 @@ import msTask.data.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import static msTask.config.CommonContants.*;
+import static msTask.config.CommonConstants.*;
 
 @Service
 public class JwtProvider {

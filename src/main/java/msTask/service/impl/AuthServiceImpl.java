@@ -19,7 +19,7 @@ import msTask.security.jwt.JwtProvider;
 import msTask.service.AuthService;
 import msTask.service.UserService;
 import msTask.web.response.AuthResponseModel;
-import static msTask.config.CommonContants.*;
+import static msTask.config.CommonConstants.*;
 import static msTask.config.ExceptionConstants.*;
 
 @Service

@@ -13,7 +13,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import static msTask.config.CommonContants.*;
+import static msTask.config.CommonConstants.*;
 
 import java.io.IOException;
 
