@@ -19,6 +19,7 @@ public class PathConstants {
 	private final static String CREATE_L_B = "/create";
 	private final static String ALL_L_B = "/all";
 	private final static String PAGES_L_B = "/pages";
+	private final static String PAGES_NA_L_B = "/pages-nq";
 	private final static String UPDATE_L_B = "/update";
 	private final static String DELETE_L_B = "/delete";
 	
@@ -39,6 +40,7 @@ public class PathConstants {
 	
 	//USER CONTROLLER LINKS
 	public final static String GET_ALL_USERS_BY_PAGES_L = ALL_L_B + PAGES_L_B;
+	public final static String GET_ALL_USERS_BY_PAGES_NA_L = ALL_L_B + PAGES_NA_L_B;
 	public final static String GET_ALL_USERS_L = ALL_L_B;
 	public final static String GET_ALL_USER_BY_ID_L = USER_ID_PATH_VARIABLE;
 	public final static String UPDATE_USER_L = UPDATE_L_B;

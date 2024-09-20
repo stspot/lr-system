@@ -33,7 +33,7 @@ import static msTask.config.PathConstants.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = AUTH_L)
-@CrossOrigin(originPatterns = CROSS_ORGIN_PATTERN_L)
+//@CrossOrigin(originPatterns = CROSS_ORGIN_PATTERN_L)
 @Tag(name = "Auth Controller", description = "This controller handles the registration, " +
 		"login and forgotten password recovery operations in this api.")
 public class AuthController {

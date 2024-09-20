@@ -13,6 +13,7 @@ import msTask.service.UserService;
 
 import static msTask.config.ExceptionConstants.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -76,8 +77,23 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public Page<User> findAllUsersNq(
+			Pageable pageable, String primarySortField,
+			String secondarySortField, boolean isAscPrimary,
+			boolean isAscSecondary) {
+		return userRepository.findAllSorted(
+				pageable, primarySortField, secondarySortField, isAscPrimary, isAscSecondary);
+	}
+
+	@Deprecated
+	@Override
 	public Page<User> findAllP(Pageable pageable) {
         return this.userRepository.findAll(pageable);
+	}
+
+	@Override
+	public Page<User> searchUsers(String searchTerm, LocalDate birthday, Pageable pageable) {
+		return userRepository.searchUsers(searchTerm, birthday, pageable);
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import msTask.exception.UserException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface UserService {
@@ -79,10 +80,36 @@ public interface UserService {
 	/**
 	 * Retrieves a page of users from the database based on the given pageable parameters.
 	 *
+	 * @param pageable           The pageable object specifying the page number and size.
+	 * @param primarySortField   The primary field by which to sort the users.
+	 * @param secondarySortField The secondary field by which to sort the users.
+	 * @param isAscPrimary       A boolean value indicating whether to sort in ascending order by the primary field.
+	 * @param isAscSecondary     A boolean value indicating whether to sort in ascending order by the secondary field.
+	 * @return A page of users.
+	 */
+	Page<User> findAllUsersNq(
+			Pageable pageable, String primarySortField,
+			String secondarySortField, boolean isAscPrimary,
+			boolean isAscSecondary);
+
+	/**
+	 * Retrieves a page of users from the database based on the given pageable parameters.
+	 *
 	 * @param pageable The pageable object specifying the page number and size.
 	 * @return A page of users.
 	 */
+	@Deprecated
 	Page<User> findAllP(Pageable pageable);
+
+	/**
+	 * Searches for users based on the given search term, birthday, and pagination parameters.
+	 *
+	 * @param searchTerm The term to search for in the username or email fields of the users.
+	 * @param birthday   The birthday to filter the users based on. Only users with this birthday will be returned.
+	 * @param pageable   The pagination parameters specifying the page number and size.
+	 * @return A page of users matching the search term and birthday.
+	 */
+	Page<User> searchUsers(String searchTerm, LocalDate birthday, Pageable pageable);
 
 	/**
 	 * Finds a user by their username.
@@ -102,5 +129,11 @@ public interface UserService {
 	 */
 	User updateUser(User newUser) throws UserException;
 
-    boolean isUserExistWithEmail(String email);
+    /**
+	 * Checks if a user with the given email address already exists in the system.
+	 *
+	 * @param email The email address to check.
+	 * @return true if a user with the given email address exists, false otherwise.
+	 */
+	boolean isUserExistWithEmail(String email);
 }
