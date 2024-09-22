@@ -1,6 +1,7 @@
 package msTask.service;
 
 import jakarta.annotation.PostConstruct;
+import msTask.exception.UserException;
 
 public interface DataInitService {
 
@@ -12,5 +13,5 @@ public interface DataInitService {
      * after the DataInitService bean is instantiated.
      */
     @PostConstruct
-    void initData();
+    void initData() throws UserException;
 }

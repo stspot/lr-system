@@ -15,10 +15,10 @@ import msTask.data.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import static msTask.config.CommonConstants.*;
+
 @Service
 public class JwtProvider {
-
-	private static final String SECRET_KEY = "897s8976f87s68s6d57a85dfa85d4f8as76df5sa5df412312234234";
 
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
@@ -39,7 +39,7 @@ public class JwtProvider {
 
 			return claims.getSubject();
 		} catch (Exception e) {
-			System.out.println("Failed to extract емаил from token: " + e.getMessage());
+			System.out.println(String.format(FET_MSG, e.getMessage()));
 		}
 		return null;
 	}
@@ -55,7 +55,7 @@ public class JwtProvider {
 
 		return Jwts.builder().setClaims(extraClaims).setSubject(user.getEmail())
 				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 10800000))
+				.setExpiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY_IN_MILLISECONDS))
 				.signWith(getSignInKey(), SignatureAlgorithm.HS256).compact();
 	}
 
@@ -76,12 +76,11 @@ public class JwtProvider {
 	}
 
 	private Claims extractAllClaims(String token) {
-
 		return Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
 	}
 
 	private Key getSignInKey() {
-		byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+		byte[] keyBytes = Decoders.BASE64.decode(JWT_SECRET_KEY);
 		return Keys.hmacShaKeyFor(keyBytes);
 	}
 
@@ -90,11 +89,11 @@ public class JwtProvider {
 			Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
 			return true;
 		} catch (ExpiredJwtException e) {
-			System.out.println("Token has expired.");
+			System.out.println(JWT_EXPIRED);
 		} catch (SignatureException e) {
-			System.out.println("Invalid token signature.");
+			System.out.println(JWT_INVALID_SIGNATURE);
 		} catch (Exception e) {
-			System.out.println("Token validation failed: " + e.getMessage());
+			System.out.println(String.format(JWT_VALIDATION_FAILED, e.getMessage()));
 		}
 		return false;
 	}

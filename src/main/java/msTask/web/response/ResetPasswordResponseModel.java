@@ -1,7 +1,5 @@
 package msTask.web.response;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,8 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoleResponse extends BaseResponseModel {
+public class ResetPasswordResponseModel {
 
-    private String name;
-    private List<AuthorityResponseModel> authorities;
+    private String message;
 }

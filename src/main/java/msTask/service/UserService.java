@@ -5,6 +5,7 @@ import msTask.exception.UserException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface UserService {
@@ -32,6 +33,15 @@ public interface UserService {
 	 * @return true if the user is deleted, false otherwise.
 	 */
 	boolean deleteUserById(String userId);
+	
+	/**
+	 * Deletes a user by their ID (fake implementation).
+	 *
+	 * @param userId The ID of the user to delete.
+	 * @return true if the user is deleted, false otherwise.
+	 * @throws UserException if there is an error during the deletion process.
+	 */
+	boolean deleteUserByIdFake(String userId) throws UserException;
 
     /**
 	 * Finds a user by their unique string for password reset.
@@ -76,6 +86,15 @@ public interface UserService {
 	Page<User> findAllP(Pageable pageable);
 
 	/**
+	 * Searches for users based on the given search term, birthday, and pagination parameters.
+	 *
+	 * @param searchTerm The term to search for in the username or email fields of the users.
+	 * @param pageable   The pagination parameters specifying the page number and size.
+	 * @return A page of users matching the search term and birthday.
+	 */
+	Page<User> searchUsers(String searchTerm, Pageable pageable);
+
+	/**
 	 * Finds a user by their username.
 	 *
 	 * @param username The username of the user to find.
@@ -92,5 +111,12 @@ public interface UserService {
 	 * @throws UserException if there is an error updating the user.
 	 */
 	User updateUser(User newUser) throws UserException;
-	
+
+    /**
+	 * Checks if a user with the given email address already exists in the system.
+	 *
+	 * @param email The email address to check.
+	 * @return true if a user with the given email address exists, false otherwise.
+	 */
+	boolean isUserExistWithEmail(String email);
 }

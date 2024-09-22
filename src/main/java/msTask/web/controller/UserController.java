@@ -1,16 +1,20 @@
 package msTask.web.controller;
 
+import msTask.config.RegexConstant;
 import msTask.data.entity.User;
 import msTask.exception.UserException;
 import msTask.web.request.UserUpdateRequestModel;
 import msTask.web.response.UserResponseModel;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +24,9 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
+
 import msTask.service.UserService;
+import static msTask.config.PathConstants.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,8 +35,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/users")
-@CrossOrigin("http://localhost:4200")
+@RequestMapping(path = USERS_L)
+//@CrossOrigin(originPatterns = CROSS_ORGIN_PATTERN_L)
 @Tag(name = "User Controller", description = "")
 public class UserController {
 	
@@ -38,11 +44,11 @@ public class UserController {
 	private final ModelMapper modelMapper;
 
 	/**
-	 * Retrieves a page of users from the database based on the given pageable parameters.
+	 * Fetches a paginated list of users with specified page number and page size.
 	 *
-	 * @param page The page number. Must be a string representation of a number between 0 and 999.
-	 * @param size The page size. Must be a string representation of a number between 0 and 999.
-	 * @return A ResponseEntity containing a page of UserResponseModel objects.
+	 * @param page The page number for pagination. Value must be between 0 and 100 (inclusive). Default value is 0.
+	 * @param size The number of users per page. Value must be between 5 and 20 (inclusive). Default value is 10.
+	 * @return A ResponseEntity containing a Page of UserResponseModel objects.
 	 */
 	@Operation(
 			summary = "Get paginated list of users",
@@ -52,7 +58,7 @@ public class UserController {
 					@Parameter(name = "size", description = "Number of users per page", example = "10")})
 	@ApiResponse(responseCode = "200", description = "Successfully retrieved paginated list of users")
 	@ApiResponse(responseCode = "400", description = "Invalid page or size parameter")
-	@GetMapping("/all/pages")
+	@GetMapping(path = GET_ALL_USERS_BY_PAGES_L)
 	public ResponseEntity<Page<UserResponseModel>> getAllUsersPages(
 			@DecimalMin(value = "0")
 			@DecimalMax(value = "100")
@@ -66,6 +72,25 @@ public class UserController {
 		Page<UserResponseModel> userResponsePage = all.map(user -> modelMapper.map(user, UserResponseModel.class));
 		return new ResponseEntity<>(userResponsePage, HttpStatus.OK);
 	}
+
+	/**
+	 * Retrieves a page of users based on the search criteria.
+	 *
+	 * @param searchTerm The search term to match against the username and email fields of the users.
+	 * @param pageable The pagination information.
+	 * @return A ResponseEntity containing a page of UserResponseModel objects.
+	 */
+	@GetMapping("/search")
+	public ResponseEntity<Page<UserResponseModel>> searchUsers(
+//			@Pattern(regexp = "^[a-zA-Zа-яА-Я0-9-\\/]*$", message = "Invalid input data!")
+			@RequestParam(required = false) String searchTerm,
+//			@DecimalMin(value = "0")
+//			@DecimalMax(value = "999")
+			@PageableDefault(size = 10) Pageable pageable) {
+		Page<User> users = userService.searchUsers(searchTerm, pageable);
+		Page<UserResponseModel> userResponsePage = users.map(user -> modelMapper.map(user, UserResponseModel.class));
+		return new ResponseEntity<>(userResponsePage, HttpStatus.OK);
+	}
 	
 	/**
 	 * Retrieves a list of all users.
@@ -76,7 +101,7 @@ public class UserController {
 			description = "Fetches a list of all users.")
 	@ApiResponse(responseCode = "200", description = "Successfully retrieved list of users")
 	@ApiResponse(responseCode = "204", description = "No users found")
-	@GetMapping("/all")
+	@GetMapping(GET_ALL_USERS_L)
 	public ResponseEntity<List<UserResponseModel>> getAllUsers() {
 		List<User> users = this.userService.findAll();
 		List<UserResponseModel> allUsers = users.stream().map(u -> this.modelMapper.map(u, UserResponseModel.class))
@@ -91,7 +116,7 @@ public class UserController {
 	 * @return A ResponseEntity containing the UserResponseModel object.
 	 * @throws UserException if there is an error retrieving the user.
 	 */
-	@GetMapping("/{userId}")
+	@GetMapping(path = GET_ALL_USER_BY_ID_L)
 	@Operation(summary = "Get user by ID",
 			description = "Fetches a user by their ID.",
 			parameters = @Parameter(name = "userId", description = "ID of the user to be retrieved", example = "12345"))
@@ -99,7 +124,7 @@ public class UserController {
 	@ApiResponse(responseCode = "404", description = "User not found")
 	@ApiResponse(responseCode = "400", description = "Invalid user ID format")
 	public ResponseEntity<UserResponseModel> getByUserId(
-			@Pattern(regexp = "[a-zA-Z0-9-]+")
+			@Pattern(regexp = RegexConstant.ID_REGEX, message = RegexConstant.ID_REGEX_MSG_ERR)
 			@PathVariable ("userId") String userId) throws UserException {
 		User fUser = this.userService.findById(userId);
 		UserResponseModel user = this.modelMapper.map(fUser, UserResponseModel.class);
@@ -113,7 +138,7 @@ public class UserController {
 	 * @return A ResponseEntity containing the updated UserResponseModel object.
 	 * @throws UserException if there is an error updating the user.
 	 */
-	@PatchMapping("/update")
+	@PatchMapping(path = UPDATE_USER_L)
 	@Operation(summary = "Update user information",
 			description = "Updates user details based on provided data.")
 	@ApiResponse(responseCode = "200", description = "User successfully updated")
@@ -140,7 +165,7 @@ public class UserController {
 	@ApiResponse(responseCode = "404", description = "User not found")
 	@ApiResponse(responseCode = "400", description = "Invalid user ID format")
 	public ResponseEntity<Boolean> deleteUser(
-			@Pattern(regexp = "[a-zA-Z0-9-]+")
+			@Pattern(regexp = RegexConstant.ID_REGEX, message = RegexConstant.ID_REGEX_MSG_ERR)
 			@PathVariable ("userId") String userId) throws UserException {
 		boolean isDeleted = this.userService.deleteUserById(userId);
 		return new ResponseEntity<>(isDeleted, HttpStatus.OK);

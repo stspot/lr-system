@@ -12,12 +12,15 @@ import msTask.data.entity.Role;
 import msTask.data.entity.User;
 import msTask.data.repositority.RoleRepository;
 import msTask.data.repositority.UserRepository;
+import msTask.enums.RoleEnum;
 import msTask.exception.UserException;
 import msTask.models.EmailRequestModel;
 import msTask.security.jwt.JwtProvider;
 import msTask.service.AuthService;
 import msTask.service.UserService;
 import msTask.web.response.AuthResponseModel;
+import static msTask.config.CommonConstants.*;
+import static msTask.config.ExceptionConstants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +34,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
 	private final EmailService emailService;
 
+	//TODO ... isEnable does not work!
 	@Override
     public AuthResponseModel login(User user) throws UserException {
         User foundByEmail = this.userService.getByEmail(user.getEmail());
@@ -40,13 +44,16 @@ public class AuthServiceImpl implements AuthService {
     }
 
 	@Override
-    public User register(User user) {
+    public User register(User user) throws UserException {
 		Role role;
     	if(userRepository.count() == 0) {
-    		role = roleRepository.findByName("ROLE_ADMIN");
+    		role = roleRepository.findByName(RoleEnum.ROLE_ADMIN.name());
     	} else {
-    		role = roleRepository.findByName("ROLE_USER");
+    		role = roleRepository.findByName(RoleEnum.ROLE_USER.name());
     	}
+		if(user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+			user.setUsername(user.getEmail().split("@")[0] + UUID.randomUUID().toString().substring(0,3)); //TODO...
+		}
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.getRoles().add(role);
 		user.setEnabled(false);
@@ -55,18 +62,23 @@ public class AuthServiceImpl implements AuthService {
 		user.setCredentialsNonExpired(true);
 		String aLink = UUID.randomUUID().toString();
 		user.setActivationLink(aLink);
-		user.setMaximumActivationLinkTime(LocalDateTime.now().plusHours(2));
+		user.setMaximumActivationLinkTime(LocalDateTime.now().plusHours(MAXIMUM_ACCOUNT_CONFIRM_TIME));
 
 		String email = user.getEmail();
 		EmailRequestModel emailRequest = new EmailRequestModel();
 		emailRequest.setTo(email);
-		emailRequest.setSubject("Activation Link");
-		String message = String.format("За да активирате акаунта си, моля кликнете на следният линк:%n" +
-				"http://localhost:8080/auth/confirm-registration/%s%n" +
-				"Линкът е валиден до 2 часа", aLink);
+		emailRequest.setSubject(CONFIRM_TITLE_EMAIL);
+		String message = String.format(CONFIRM_MESSAGE, aLink);
 		emailRequest.setText(message);
+
+		boolean isUserExistWithEmail = this.userService.isUserExistWithEmail(email);
+		if (isUserExistWithEmail) {
+            throw new UserException(String.format(USER_WITH_EMAIL_ALREADY_EXISTS, email));
+        }
+
 		User savedUser = userRepository.save(user);
-		this.emailService.sendSimpleEmail(emailRequest);
+		//TODO ...
+		//this.emailService.sendSimpleEmail(emailRequest);
 		return savedUser;
     }
 
@@ -82,29 +94,29 @@ public class AuthServiceImpl implements AuthService {
 			foundUser.setActivationLink("");
 		}
 		this.userRepository.save(foundUser);
+		this.emailService.sendSimpleEmail(foundUser.getEmail(), ACCOUNT_ACTIVATED_TITLE_EMAIL, ACCOUNT_ACTIVATED_TEXT_EMAIL);
 		return true;
 	}
 
 	@Override
 	public String resetPassword(String inputEmail) throws UserException {
+
 		User user = this.userRepository.findByEmail(inputEmail);
-		if(user == null) throw new UserException("No user with that name exists!");
+		if(user == null) throw new UserException(String.format(THERE_IS_NO_USER_WITH_THIS_EMAIL, inputEmail));
 		String uniqueString = UUID.randomUUID().toString();
 		user.setUniqueStringForPasswordReset(uniqueString);
-		user.setMaximumPasswordResetTime(LocalDateTime.now().plusHours(2));
+		user.setMaximumPasswordResetTime(LocalDateTime.now().plusHours(MAXIMUM_RESET_PASSWORD_TIME));
 		userRepository.save(user);
 
 		String email = user.getEmail();
 		EmailRequestModel emailRequest = new EmailRequestModel();
 		emailRequest.setTo(email);
-		emailRequest.setSubject("Reset Password");
-		String link = String.format("http://localhost:8080/auth/create-new-password/%s", uniqueString);
-		String message = String.format("За да сложете нова парола, моля кликнете на следният линк:%n" +
-				"%s%n" +
-				"Линкът е валиден до 2 часа", link);
+		emailRequest.setSubject(RESET_PASSWORD_TITLE_EMAIL);
+		String message = String.format(RESET_PASSWORD_MESSAGE, uniqueString);
 		emailRequest.setText(message);
+
 		this.emailService.sendSimpleEmail(emailRequest);
-		return link;
+		return CHECK_YOUR_EMAIL;
 	}
 
 	@Override
@@ -113,12 +125,12 @@ public class AuthServiceImpl implements AuthService {
 		LocalDateTime maxTimeForResetPassword = foundUser.getMaximumPasswordResetTime();
 		LocalDateTime now = LocalDateTime.now();
 		if(now.isAfter(maxTimeForResetPassword) || foundUser == null) {
-			throw new UserException("The password change time has expired! / User can not be found!");
+			throw new UserException(THE_PASSWORD_EXPIRED_OR_USER_DOES_NOT_EXIST);
 		}
 		foundUser.setPassword(this.passwordEncoder.encode(password));
 		foundUser.setUniqueStringForPasswordReset("");
 		userRepository.save(foundUser);
-		this.emailService.sendSimpleEmail(foundUser.getEmail(), "New password", "Your password was changed!");
+		this.emailService.sendSimpleEmail(foundUser.getEmail(), NEW_PASSWORD_TITLE_EMAIL, NEW_PASSWORD_TEXT_EMAIL);
 		return true;
 	}
 }
