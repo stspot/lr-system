@@ -20,10 +20,11 @@ public class CommonConstants {
 	
 	public static final String ACCOUNT_ACTIVATED_TITLE_EMAIL = "Activated Account";
 	public static final String ACCOUNT_ACTIVATED_TEXT_EMAIL = "Account activated successfully. You can log in.";
-	
+
+	public static final String CHECK_YOUR_EMAIL = "Check your email.";
+
 	public static final String COMMON_EXCEPTION_TEXT = "Error in back end!";
-	
-	
+
 	public static final int TOKEN_VALIDITY_IN_MILLISECONDS = 3600000;
 	public static final String AUTHORIZATION = "Authorization";
 	public static final String JWT_TOKEN_PREFIX = "Bearer ";

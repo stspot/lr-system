@@ -44,56 +44,12 @@ public class UserController {
 	private final ModelMapper modelMapper;
 
 	/**
-	 * Retrieves a paginated list of users with specified page number and page size.
+	 * Fetches a paginated list of users with specified page number and page size.
 	 *
-	 * @param page              The page number for pagination.
-	 *                          Value must be between 0 and 100 (inclusive).
-	 *                          Default value is 0.
-	 * @param size              The number of users per page.
-	 *                          Value must be between 5 and 20 (inclusive).
-	 *                          Default value is 10.
-	 * @param primarySortField  The primary sort field for the users.
-	 *                          Default value is "lastName".
-	 * @param secondarySortField The secondary sort field for the users.
-	 *                          Default value is "birthday".
-	 * @param isAscPrimary      Flag indicating whether the primary sort is in ascending order or not.
-	 *                          Default value is true.
-	 * @param isAscSecondary    Flag indicating whether the secondary sort is in ascending order or not.
-	 *                          Default value is true.
+	 * @param page The page number for pagination. Value must be between 0 and 100 (inclusive). Default value is 0.
+	 * @param size The number of users per page. Value must be between 5 and 20 (inclusive). Default value is 10.
 	 * @return A ResponseEntity containing a Page of UserResponseModel objects.
 	 */
-	@GetMapping(path = GET_ALL_USERS_BY_PAGES_NA_L)
-	public ResponseEntity<Page<UserResponseModel>> getAllUsersPagesNa(
-			@DecimalMin(value = "0")
-			@DecimalMax(value = "100")
-			@RequestParam(defaultValue = "0") int page,
-			@DecimalMin(value = "5")
-			@DecimalMax(value = "20")
-			@RequestParam(defaultValue = "10") int size,
-			@RequestParam(defaultValue = "lastName") String primarySortField,
-			@RequestParam(defaultValue = "birthday") String secondarySortField,
-			@RequestParam(defaultValue = "true") boolean isAscPrimary,
-			@RequestParam(defaultValue = "true") boolean isAscSecondary
-	) {
-		//TODO... Params Validation!!!
-		Pageable pageable = PageRequest.of(page, size);
-		Page<User> all = userService.findAllUsersNq(pageable, primarySortField, secondarySortField, isAscPrimary, isAscSecondary);
-		Page<UserResponseModel> userResponsePage = all.map(user -> modelMapper.map(user, UserResponseModel.class));
-		return new ResponseEntity<>(userResponsePage, HttpStatus.OK);
-	}
-
-	/**
-	 * Retrieves a paginated list of users with specified page number and page size.
-	 *
-	 * @param page The page number for pagination.
-	 * @param size The number of users per page.
-	 * @return A ResponseEntity containing a Page of UserResponseModel objects.
-	 * @deprecated This method is deprecated. Use searchUsers method instead.
-	 * @deprecated For new projects prefer to use new API methods.
-	 * @deprecated Use searchUsers method instead.
-	 * @deprecated Use searchUsers method instead.
-	 */
-	@Deprecated
 	@Operation(
 			summary = "Get paginated list of users",
 			description = "Fetches a paginated list of users with specified page number and page size.",
@@ -121,17 +77,17 @@ public class UserController {
 	 * Retrieves a page of users based on the search criteria.
 	 *
 	 * @param searchTerm The search term to match against the username and email fields of the users.
-	 * @param birthday The birthday to filter the users by. Only users with a matching birthday will be included.
 	 * @param pageable The pagination information.
 	 * @return A ResponseEntity containing a page of UserResponseModel objects.
 	 */
 	@GetMapping("/search")
 	public ResponseEntity<Page<UserResponseModel>> searchUsers(
-			//TODO... Params Validation!!!
+//			@Pattern(regexp = "^[a-zA-Zа-яА-Я0-9-\\/]*$", message = "Invalid input data!")
 			@RequestParam(required = false) String searchTerm,
-			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate birthday,
+//			@DecimalMin(value = "0")
+//			@DecimalMax(value = "999")
 			@PageableDefault(size = 10) Pageable pageable) {
-		Page<User> users = userService.searchUsers(searchTerm, birthday, pageable);
+		Page<User> users = userService.searchUsers(searchTerm, pageable);
 		Page<UserResponseModel> userResponsePage = users.map(user -> modelMapper.map(user, UserResponseModel.class));
 		return new ResponseEntity<>(userResponsePage, HttpStatus.OK);
 	}

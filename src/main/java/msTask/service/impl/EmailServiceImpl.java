@@ -33,7 +33,7 @@ public class EmailServiceImpl implements EmailService {
 		message.setText(text);
 		message.setFrom(emailOfSender);
 		//TODO...
-		mailSender.send(message);
+		//mailSender.send(message);
 	}
 
 	@Async

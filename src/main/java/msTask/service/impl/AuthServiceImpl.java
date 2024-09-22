@@ -34,6 +34,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
 	private final EmailService emailService;
 
+	//TODO ... isEnable does not work!
 	@Override
     public AuthResponseModel login(User user) throws UserException {
         User foundByEmail = this.userService.getByEmail(user.getEmail());
@@ -76,7 +77,8 @@ public class AuthServiceImpl implements AuthService {
         }
 
 		User savedUser = userRepository.save(user);
-		this.emailService.sendSimpleEmail(emailRequest);
+		//TODO ...
+		//this.emailService.sendSimpleEmail(emailRequest);
 		return savedUser;
     }
 
@@ -114,7 +116,7 @@ public class AuthServiceImpl implements AuthService {
 		emailRequest.setText(message);
 
 		this.emailService.sendSimpleEmail(emailRequest);
-		return RESET_PASSWORD_MESSAGE;
+		return CHECK_YOUR_EMAIL;
 	}
 
 	@Override
