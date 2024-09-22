@@ -45,7 +45,7 @@ public class SecurityConfig {
         .sessionManagement(session -> session
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(ahr -> ahr
-        		.requestMatchers(allowedLinks).permitAll()
+        		.requestMatchers("/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated())
         .httpBasic(Customizer.withDefaults())

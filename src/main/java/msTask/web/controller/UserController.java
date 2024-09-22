@@ -83,10 +83,15 @@ public class UserController {
 	@GetMapping("/search")
 	public ResponseEntity<Page<UserResponseModel>> searchUsers(
 //			@Pattern(regexp = "^[a-zA-Zа-яА-Я0-9-\\/]*$", message = "Invalid input data!")
-			@RequestParam(required = false) String searchTerm,
 //			@DecimalMin(value = "0")
 //			@DecimalMax(value = "999")
-			@PageableDefault(size = 10) Pageable pageable) {
+//			@PageableDefault(size = 10) Pageable pageable
+			
+			@RequestParam(required = true) String searchTerm,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size
+			) {
+		Pageable pageable = PageRequest.of(page, size);
 		Page<User> users = userService.searchUsers(searchTerm, pageable);
 		Page<UserResponseModel> userResponsePage = users.map(user -> modelMapper.map(user, UserResponseModel.class));
 		return new ResponseEntity<>(userResponsePage, HttpStatus.OK);
@@ -168,6 +173,20 @@ public class UserController {
 			@Pattern(regexp = RegexConstant.ID_REGEX, message = RegexConstant.ID_REGEX_MSG_ERR)
 			@PathVariable ("userId") String userId) throws UserException {
 		boolean isDeleted = this.userService.deleteUserById(userId);
+		return new ResponseEntity<>(isDeleted, HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/delete/fake/{userId}")
+	@Operation(summary = "Delete a user",
+			description = "Deletes a user by their ID.",
+			parameters = @Parameter(name = "userId", description = "ID of the user to be deleted", example = "12345"))
+	@ApiResponse(responseCode = "200", description = "User successfully deleted")
+	@ApiResponse(responseCode = "404", description = "User not found")
+	@ApiResponse(responseCode = "400", description = "Invalid user ID format")
+	public ResponseEntity<Boolean> deleteUserFake(
+			@Pattern(regexp = RegexConstant.ID_REGEX, message = RegexConstant.ID_REGEX_MSG_ERR)
+			@PathVariable ("userId") String userId) throws UserException {
+		boolean isDeleted = this.userService.deleteUserByIdFake(userId);
 		return new ResponseEntity<>(isDeleted, HttpStatus.OK);
 	}
 }
