@@ -1,20 +1,19 @@
 package msTask.web.controller;
 
-import msTask.config.RegexConstant;
+import msTask.constants.RegexConstant;
 import msTask.data.entity.User;
 import msTask.exception.UserException;
 import msTask.web.request.UserUpdateRequestModel;
 import msTask.web.response.UserResponseModel;
 
-import java.time.LocalDate;
+import static msTask.constants.PathConstants.*;
+
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +25,6 @@ import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 
 import msTask.service.UserService;
-import static msTask.config.PathConstants.*;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,7 +33,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = USERS_L)
-//@CrossOrigin(originPatterns = CROSS_ORGIN_PATTERN_L)
 @Tag(name = "User Controller", description = "")
 public class UserController {
 	

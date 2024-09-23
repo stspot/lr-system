@@ -1,5 +1,7 @@
 package msTask.security.jwt;
 
+import static msTask.constants.CommonConstants.*;
+
 import java.security.Key;
 import java.util.*;
 import java.util.function.Function;
@@ -14,8 +16,6 @@ import msTask.data.entity.Role;
 import msTask.data.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
-import static msTask.config.CommonConstants.*;
 
 @Service
 public class JwtProvider {
@@ -36,7 +36,6 @@ public class JwtProvider {
 	public String getUsernameFromJWT(String token) {
 		try {
 			Claims claims = Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
-
 			return claims.getSubject();
 		} catch (Exception e) {
 			System.out.println(String.format(FET_MSG, e.getMessage()));

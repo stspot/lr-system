@@ -9,8 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import msTask.config.RegexConstant;
+import msTask.constants.RegexConstant;
 
 @Getter
 @Setter

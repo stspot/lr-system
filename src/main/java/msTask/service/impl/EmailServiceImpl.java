@@ -1,6 +1,6 @@
 package msTask.service.impl;
 
-import msTask.models.EmailRequestModel;
+import msTask.models.EmailModel;
 import msTask.service.EmailService;
 
 import org.springframework.core.env.Environment;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 public class EmailServiceImpl implements EmailService {
 	
 	private final Environment environment;
-
 	private final JavaMailSender mailSender;
 
 	public EmailServiceImpl(JavaMailSender mailSender, Environment environment) {
@@ -32,13 +31,12 @@ public class EmailServiceImpl implements EmailService {
 		message.setSubject(subject);
 		message.setText(text);
 		message.setFrom(emailOfSender);
-		//TODO...
-		//mailSender.send(message);
+		mailSender.send(message);
 	}
 
 	@Async
 	@Override
-	public void sendSimpleEmail(EmailRequestModel emailRequestModel) {
-		this.sendSimpleEmail(emailRequestModel.getTo(), emailRequestModel.getSubject(), emailRequestModel.getText());
+	public void sendSimpleEmail(EmailModel emailModel) {
+		this.sendSimpleEmail(emailModel.getTo(), emailModel.getSubject(), emailModel.getText());
 	}
 }

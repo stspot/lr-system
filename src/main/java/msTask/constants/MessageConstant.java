@@ -1,4 +1,4 @@
-package msTask.config;
+package msTask.constants;
 
 public class MessageConstant {
 	

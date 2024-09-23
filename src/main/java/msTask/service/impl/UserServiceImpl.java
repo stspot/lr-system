@@ -11,9 +11,8 @@ import msTask.data.entity.User;
 import msTask.data.repositority.UserRepository;
 import msTask.service.UserService;
 
-import static msTask.config.ExceptionConstants.*;
+import static msTask.constants.ExceptionConstants.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service

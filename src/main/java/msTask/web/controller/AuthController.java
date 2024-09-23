@@ -14,12 +14,15 @@ import msTask.web.request.NewPasswordRequestModel;
 import msTask.web.request.ResetPasswordRequestModel;
 
 import msTask.web.response.ResetPasswordResponseModel;
+
+import static msTask.constants.PathConstants.*;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import msTask.config.RegexConstant;
+import msTask.constants.RegexConstant;
 import msTask.data.entity.User;
 import msTask.exception.UserException;
 import msTask.service.AuthService;
@@ -27,8 +30,6 @@ import msTask.web.request.UserLoginRequestModel;
 import msTask.web.request.UserRegisterRequestModel;
 import msTask.web.response.AuthResponseModel;
 import msTask.web.response.UserResponseModel;
-
-import static msTask.config.PathConstants.*;
 
 @RestController
 @RequiredArgsConstructor
