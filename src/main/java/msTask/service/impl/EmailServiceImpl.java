@@ -1,5 +1,6 @@
 package msTask.service.impl;
 
+import msTask.constants.EmailConstants;
 import msTask.models.EmailModel;
 import msTask.service.EmailService;
 
@@ -31,7 +32,9 @@ public class EmailServiceImpl implements EmailService {
 		message.setSubject(subject);
 		message.setText(text);
 		message.setFrom(emailOfSender);
-		mailSender.send(message);
+		if(EmailConstants.SENDING_LETTERS) {
+			mailSender.send(message);
+		}
 	}
 
 	@Async

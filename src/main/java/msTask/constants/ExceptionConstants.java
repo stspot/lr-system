@@ -2,7 +2,6 @@ package msTask.constants;
 
 public class ExceptionConstants {
 	
-	//"User with \"uniqueStringForPasswordReset\": %s not found"
 	public static final String USER_WITH_USFPR_NOT_FOUND = "User \"uniqueStringForPasswordReset\": %s not found!";
 	public static final String USER_WITH_CONFIRM_LINK_NOT_FOUND = "User with confirm link: %s not found!";
 	public static final String USER_WITH_ID_NOT_FOUND = "User with id: %s not found!";

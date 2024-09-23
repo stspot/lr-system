@@ -1,6 +1,6 @@
 package msTask.constants;
 
-public class MessageConstant {
+public class EmailConstants {
 	
-	
+	public static final boolean SENDING_LETTERS = true;
 }

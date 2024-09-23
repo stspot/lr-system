@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import msTask.service.EmailService;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,9 @@ public class AuthServiceImpl implements AuthService {
 	@Override
     public AuthResponseModel login(User user) throws UserException {
         User foundByEmail = this.userService.getByEmail(user.getEmail());
+        if (!foundByEmail.isEnabled()) {
+            throw new DisabledException("User is disabled");
+        }
         this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
     	String jwtToken = jwtProvider.generateToken(foundByEmail);
     	return new AuthResponseModel(jwtToken);

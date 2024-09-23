@@ -29,7 +29,6 @@ public class DataInitServiceImpl implements DataInitService {
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final AuthService authService;
-
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
@@ -42,7 +41,7 @@ public class DataInitServiceImpl implements DataInitService {
             this.initRoles();
         }
         if (this.userRepository.count() < 2) {
-            this.initUsers();
+            //this.initUsers();
         }
     }
 
