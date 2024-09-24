@@ -72,17 +72,13 @@ public class UserController {
 	/**
 	 * Retrieves a page of users based on the search criteria.
 	 *
-	 * @param searchTerm The search term to match against the username and email fields of the users.
+	 * @param searchTerm.
 	 * @param pageable The pagination information.
 	 * @return A ResponseEntity containing a page of UserResponseModel objects.
 	 */
 	@GetMapping("/search")
 	public ResponseEntity<Page<UserResponseModel>> searchUsers(
-//			@Pattern(regexp = "^[a-zA-Zа-яА-Я0-9-\\/]*$", message = "Invalid input data!")
-//			@DecimalMin(value = "0")
-//			@DecimalMax(value = "999")
-//			@PageableDefault(size = 10) Pageable pageable
-			
+			@Pattern(regexp = "^[a-zA-Zа-яА-Я0-9-\\/]*$", message = "Invalid input data!")
 			@RequestParam(required = true) String searchTerm,
 			@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size
