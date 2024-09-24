@@ -75,11 +75,6 @@ class UserServiceImplTest {
 		assertEquals(this.adminUser.getEmail(), fUser.getEmail());
 	}
 
-//	@Test
-//	void testFindByActivationLink() {
-//		fail("Not yet implemented");
-//	}
-
 	@Test
 	void testFindById() throws UserException {
 		User userById = this.userService.findById(this.adminUser.getId());

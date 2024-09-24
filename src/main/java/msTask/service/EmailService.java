@@ -1,11 +1,11 @@
 package msTask.service;
 
-import msTask.models.EmailRequestModel;
+import msTask.models.EmailModel;
 
 public interface EmailService {
 
 	void sendSimpleEmail(String to, String subject, String text);
 
-	void sendSimpleEmail(EmailRequestModel emailRequestModel);
+	void sendSimpleEmail(EmailModel emailModel);
 
 }

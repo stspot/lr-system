@@ -1,6 +1,7 @@
 package msTask.security.jwt;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +14,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import static msTask.config.CommonConstants.*;
+import static msTask.constants.CommonConstants.*;
 
 import java.io.IOException;
 
@@ -36,7 +37,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         if(StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
             String username = jwtProvider.getUsernameFromJWT(token);
 
-            UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);            
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null,
                     userDetails.getAuthorities());
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

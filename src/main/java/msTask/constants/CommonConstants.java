@@ -1,6 +1,6 @@
-package msTask.config;
+package msTask.constants;
 
-import static msTask.config.PathConstants.*;
+import static msTask.constants.PathConstants.*;
 
 public class CommonConstants {
 

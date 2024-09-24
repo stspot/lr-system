@@ -1,20 +1,19 @@
 package msTask.web.controller;
 
-import msTask.config.RegexConstant;
+import msTask.constants.RegexConstant;
 import msTask.data.entity.User;
 import msTask.exception.UserException;
 import msTask.web.request.UserUpdateRequestModel;
 import msTask.web.response.UserResponseModel;
 
-import java.time.LocalDate;
+import static msTask.constants.PathConstants.*;
+
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +25,6 @@ import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 
 import msTask.service.UserService;
-import static msTask.config.PathConstants.*;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,7 +33,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = USERS_L)
-//@CrossOrigin(originPatterns = CROSS_ORGIN_PATTERN_L)
 @Tag(name = "User Controller", description = "")
 public class UserController {
 	
@@ -76,17 +72,18 @@ public class UserController {
 	/**
 	 * Retrieves a page of users based on the search criteria.
 	 *
-	 * @param searchTerm The search term to match against the username and email fields of the users.
+	 * @param searchTerm.
 	 * @param pageable The pagination information.
 	 * @return A ResponseEntity containing a page of UserResponseModel objects.
 	 */
 	@GetMapping("/search")
 	public ResponseEntity<Page<UserResponseModel>> searchUsers(
-//			@Pattern(regexp = "^[a-zA-Zа-яА-Я0-9-\\/]*$", message = "Invalid input data!")
-			@RequestParam(required = false) String searchTerm,
-//			@DecimalMin(value = "0")
-//			@DecimalMax(value = "999")
-			@PageableDefault(size = 10) Pageable pageable) {
+			@Pattern(regexp = "^[a-zA-Zа-яА-Я0-9-\\/]*$", message = "Invalid input data!")
+			@RequestParam(required = true) String searchTerm,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size
+			) {
+		Pageable pageable = PageRequest.of(page, size);
 		Page<User> users = userService.searchUsers(searchTerm, pageable);
 		Page<UserResponseModel> userResponsePage = users.map(user -> modelMapper.map(user, UserResponseModel.class));
 		return new ResponseEntity<>(userResponsePage, HttpStatus.OK);
@@ -168,6 +165,20 @@ public class UserController {
 			@Pattern(regexp = RegexConstant.ID_REGEX, message = RegexConstant.ID_REGEX_MSG_ERR)
 			@PathVariable ("userId") String userId) throws UserException {
 		boolean isDeleted = this.userService.deleteUserById(userId);
+		return new ResponseEntity<>(isDeleted, HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/delete/fake/{userId}")
+	@Operation(summary = "Delete a user",
+			description = "Deletes a user by their ID.",
+			parameters = @Parameter(name = "userId", description = "ID of the user to be deleted", example = "12345"))
+	@ApiResponse(responseCode = "200", description = "User successfully deleted")
+	@ApiResponse(responseCode = "404", description = "User not found")
+	@ApiResponse(responseCode = "400", description = "Invalid user ID format")
+	public ResponseEntity<Boolean> deleteUserFake(
+			@Pattern(regexp = RegexConstant.ID_REGEX, message = RegexConstant.ID_REGEX_MSG_ERR)
+			@PathVariable ("userId") String userId) throws UserException {
+		boolean isDeleted = this.userService.deleteUserByIdFake(userId);
 		return new ResponseEntity<>(isDeleted, HttpStatus.OK);
 	}
 }

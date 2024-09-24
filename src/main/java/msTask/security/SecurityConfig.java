@@ -1,5 +1,7 @@
 package msTask.security;
 
+import static msTask.constants.PathConstants.*;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,7 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import msTask.security.jwt.JWTAuthFilter;
 import msTask.security.jwt.JwtAuthEntryPoint;
-import static msTask.config.PathConstants.*;
 
 @Configuration
 @EnableWebSecurity

@@ -1,9 +1,13 @@
 package msTask.service.impl;
 
+import static msTask.constants.CommonConstants.*;
+import static msTask.constants.ExceptionConstants.*;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 import msTask.service.EmailService;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,13 +18,11 @@ import msTask.data.repositority.RoleRepository;
 import msTask.data.repositority.UserRepository;
 import msTask.enums.RoleEnum;
 import msTask.exception.UserException;
-import msTask.models.EmailRequestModel;
+import msTask.models.EmailModel;
 import msTask.security.jwt.JwtProvider;
 import msTask.service.AuthService;
 import msTask.service.UserService;
 import msTask.web.response.AuthResponseModel;
-import static msTask.config.CommonConstants.*;
-import static msTask.config.ExceptionConstants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +36,12 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
 	private final EmailService emailService;
 
-	//TODO ... isEnable does not work!
 	@Override
     public AuthResponseModel login(User user) throws UserException {
         User foundByEmail = this.userService.getByEmail(user.getEmail());
+        if (!foundByEmail.isEnabled()) {
+            throw new DisabledException("User is disabled");
+        }
         this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
     	String jwtToken = jwtProvider.generateToken(foundByEmail);
     	return new AuthResponseModel(jwtToken);
@@ -65,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
 		user.setMaximumActivationLinkTime(LocalDateTime.now().plusHours(MAXIMUM_ACCOUNT_CONFIRM_TIME));
 
 		String email = user.getEmail();
-		EmailRequestModel emailRequest = new EmailRequestModel();
+		EmailModel emailRequest = new EmailModel();
 		emailRequest.setTo(email);
 		emailRequest.setSubject(CONFIRM_TITLE_EMAIL);
 		String message = String.format(CONFIRM_MESSAGE, aLink);
@@ -77,16 +81,13 @@ public class AuthServiceImpl implements AuthService {
         }
 
 		User savedUser = userRepository.save(user);
-		//TODO ...
-		//this.emailService.sendSimpleEmail(emailRequest);
+		this.emailService.sendSimpleEmail(emailRequest);
 		return savedUser;
     }
 
 	@Override
 	//TESTED
 	public boolean confirmRegistration(String aLink) throws UserException {
-		//List<String> list = Arrays.asList(link.split("/"));
-		//String aLink = list.get(list.size() - 1);
 		User foundUser = this.userService.findByActivationLink(aLink);
 		LocalDateTime maxTime = foundUser.getMaximumActivationLinkTime();
 		if (!foundUser.isEnabled() && LocalDateTime.now().isBefore(maxTime) && foundUser != null) {
@@ -100,7 +101,6 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public String resetPassword(String inputEmail) throws UserException {
-
 		User user = this.userRepository.findByEmail(inputEmail);
 		if(user == null) throw new UserException(String.format(THERE_IS_NO_USER_WITH_THIS_EMAIL, inputEmail));
 		String uniqueString = UUID.randomUUID().toString();
@@ -109,7 +109,7 @@ public class AuthServiceImpl implements AuthService {
 		userRepository.save(user);
 
 		String email = user.getEmail();
-		EmailRequestModel emailRequest = new EmailRequestModel();
+		EmailModel emailRequest = new EmailModel();
 		emailRequest.setTo(email);
 		emailRequest.setSubject(RESET_PASSWORD_TITLE_EMAIL);
 		String message = String.format(RESET_PASSWORD_MESSAGE, uniqueString);

@@ -1,8 +1,7 @@
-package msTask.config;
+package msTask.constants;
 
 public final class RegexConstant {
 
-//	public final static String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 	public final static String EMAIL_REGEX_MSG_ERR = "An error occurred. Please enter a valid email address.";
 	
 	public final static String USERNAME_REGEX = "^[a-zA-Z0-9._-]{3,16}$";
@@ -29,11 +28,6 @@ public final class RegexConstant {
 	public final static String LAST_NAME_REGEX_MSG_ERR = "An error occurred. Please enter a valid last name."
 				+ "The input must start with an uppercase Latin or Cyrillic letter, "
 				+ "followed by 1 to 49 lowercase Latin or Cyrillic letters, apostrophes, or hyphens.";
-	
-//	public final static String BIRTHDAY_REGEX = "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/(19|20)\\d{2}$";
-//	public final static String BIRTHDAY_REGEX_MSG_ERR = "An error occurred. Please enter a valid birthday."
-//				+ "The input must be a valid date in the format DD/MM/YYYY, where the day is between 01 and 31, "
-//				+ "the month is between 01 and 12, and the year starts with 19 or 20, followed by two digits.";
 	
 	public final static String BIRTHDAY_REGEX_MSG_ERR = "An error occurred. Please enter a valid birthday."
 				+ "Birthday must be a date in the past";

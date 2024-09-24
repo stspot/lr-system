@@ -9,7 +9,6 @@ import msTask.data.entity.User;
 import msTask.data.repositority.UserRepository;
 import msTask.exception.UserException;
 import msTask.service.AuthService;
-import msTask.service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
@@ -30,7 +29,6 @@ public class DataInitServiceImpl implements DataInitService {
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final AuthService authService;
-
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
@@ -43,7 +41,7 @@ public class DataInitServiceImpl implements DataInitService {
             this.initRoles();
         }
         if (this.userRepository.count() < 2) {
-            this.initUsers();
+            //this.initUsers();
         }
     }
 

@@ -1,7 +1,5 @@
 package msTask.data.repositority;
 
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -29,13 +27,12 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query(value = "SELECT * FROM users u WHERE " +
             "(u.email LIKE %:searchTerm% OR " +
             "u.first_name LIKE %:searchTerm% OR " +
-            "u.last_name LIKE %:searchTerm%)",  // Затваряме скобата тук
+            "u.last_name LIKE %:searchTerm%)",
             countQuery = "SELECT COUNT(*) FROM users u WHERE " +
                     "(u.email LIKE %:searchTerm% OR " +
                     "u.first_name LIKE %:searchTerm% OR " +
-                    "u.last_name LIKE %:searchTerm%)",  // Затваряме скобата тук
+                    "u.last_name LIKE %:searchTerm%)",
             nativeQuery = true)
-    Page<User> searchUsers(@Param("searchTerm") String searchTerm,
-                           Pageable pageable);
+    Page<User> searchUsers(@Param("searchTerm") String searchTerm, Pageable pageable);
 
 }
